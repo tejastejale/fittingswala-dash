@@ -4,11 +4,18 @@ function NewProduct() {
   const [isDropdownVisible1, setDropdownVisible1] = useState(false);
   const [selectedOption1, setSelectedOption1] = useState("Main Category");
   const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
 
   const options1 = ["Cloth set", "Sales details", "Marketing"];
 
   const toggleDropdown1 = () => {
     setDropdownVisible1(!isDropdownVisible1);
+  };
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  };
+  const handleNameChange = (e) => {
+    setName(e.target.value);
   };
 
   const handleOptionClick1 = (option) => {
@@ -167,12 +174,16 @@ function NewProduct() {
     <div className="my-6 space-y-5 pr-4">
       <div className="relative">
         <input
+          onChange={handleNameChange}
+          value={name}
           placeholder="Product Name"
           className="w-full p-2 h-10 border-blue-500 border-[1px] rounded-md focus:ring-0 focus:border-[2px]"
         />
       </div>
       <div className="relative gap-5">
         <textarea
+          onChange={handleDescriptionChange}
+          value={description}
           placeholder="Description"
           className="w-full p-2 h-20 border-blue-500 border-[1px] rounded-md focus:ring-0 focus:border-[2px]"
         />

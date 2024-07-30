@@ -1,6 +1,18 @@
 import React, { useState } from "react";
-
+import { IoArrowBack } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 function NewProduct() {
+  function handlesubmit() {
+    console.log(
+      name,
+      description,
+      selectedOption1,
+      selectedOption2,
+      selectedOption3,
+      sizeCharts
+    );
+  }
+  const navigate = useNavigate();
   const [isDropdownVisible1, setDropdownVisible1] = useState(false);
   const [selectedOption1, setSelectedOption1] = useState("Main Category");
   const [description, setDescription] = useState("");
@@ -64,10 +76,11 @@ function NewProduct() {
   };
 
   const handleOptionClick4 = (option, index) => {
-    setSelectedOption4((prevState) => ({
-      ...prevState,
-      [index]: option,
-    }));
+    setSizeCharts((prevState) => {
+      const newSizeCharts = [...prevState];
+      newSizeCharts[index].status = option;
+      return newSizeCharts;
+    });
     setDropdownVisible4((prevState) => ({
       ...prevState,
       [index]: false,
@@ -78,11 +91,11 @@ function NewProduct() {
     {
       size: "",
       sku: "",
-      status: "Active",
+      status: "",
       msq: "",
       finish: "",
       rolePrices: [
-        { role: "", gst: "", priceWithGst: "", minPriceQuantity: "" },
+        { role: "", gst: "", priceWithGst: "", MinimumOrderQuantity: "" },
       ],
     },
   ]);
@@ -93,11 +106,11 @@ function NewProduct() {
       {
         size: "",
         sku: "",
-        status: "Active",
+        status: "",
         msq: "",
         finish: "",
         rolePrices: [
-          { role: "", gst: "", priceWithGst: "", minPriceQuantity: "" },
+          { role: "", gst: "", priceWithGst: "", MinimumOrderQuantity: "" },
         ],
       },
     ]);
@@ -114,7 +127,6 @@ function NewProduct() {
     newSizeCharts.splice(index, 1);
     setSizeCharts(newSizeCharts);
   };
-
   const handleRolePriceChange = (chartIndex, roleIndex, field, value) => {
     const newSizeCharts = [...sizeCharts];
     newSizeCharts[chartIndex].rolePrices[roleIndex][field] = value;
@@ -127,7 +139,7 @@ function NewProduct() {
       role: "",
       gst: "",
       priceWithGst: "",
-      minPriceQuantity: "",
+      MinimumOrderQuantity: "",
     });
     setSizeCharts(newSizeCharts);
   };
@@ -161,6 +173,7 @@ function NewProduct() {
         [roleIndex]: option,
       },
     }));
+    handleRolePriceChange(chartIndex, roleIndex, "role", option);
     setDropdownVisibleRole((prevState) => ({
       ...prevState,
       [chartIndex]: {
@@ -172,6 +185,12 @@ function NewProduct() {
 
   return (
     <div className="my-6 space-y-5 pr-4">
+      <button
+        className="p-1 px-4 bg-white rounded-md border-[1px] border-blue-500"
+        onClick={() => navigate(-1)}
+      >
+        <IoArrowBack className="text-2xl text-blue-500" />
+      </button>
       <div className="relative">
         <input
           onChange={handleNameChange}
@@ -188,7 +207,6 @@ function NewProduct() {
           className="w-full p-2 h-20 border-blue-500 border-[1px] rounded-md focus:ring-0 focus:border-[2px]"
         />
       </div>
-
       {/* First Dropdown */}
       <div className="relative">
         <div className="relative w-full">
@@ -231,7 +249,6 @@ function NewProduct() {
           )}
         </div>
       </div>
-
       {/* Second Dropdown */}
       <div className="relative">
         <div className="relative w-full">
@@ -274,7 +291,6 @@ function NewProduct() {
           )}
         </div>
       </div>
-
       {/* Third Dropdown */}
       <div className="relative">
         <div className="relative w-full">
@@ -317,7 +333,6 @@ function NewProduct() {
           )}
         </div>
       </div>
-
       <div>
         {sizeCharts.map((chart, chartIndex) => (
           <div
@@ -363,10 +378,10 @@ function NewProduct() {
                   <button
                     type="button"
                     id={`dropdownToggle4-${chartIndex}`}
-                    className="px-5 py-2.5 rounded text-black w-full text-start flex justify-between align-middle m-auto items-center text-sm font-medium outline-none bg-white border-[1px] border-solid border-blue-500 "
+                    className="px-5 py-2.5 rounded text-black w-full text-start flex justify-between align-middle m-auto items-center text-sm font-medium outline-none bg-white border-[1px] border-solid border-blue-500"
                     onClick={() => toggleDropdown4(chartIndex)}
                   >
-                    {selectedOption4[chartIndex] || "Status"}
+                    {chart.status || "Status"}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="w-3 fill-blue-500 inline ml-3"
@@ -416,9 +431,9 @@ function NewProduct() {
             {chart.rolePrices.map((rolePrice, roleIndex) => (
               <div
                 key={roleIndex}
-                className="grid grid-cols-5 gap-4 mb-4 p-4 border border-blue-500 rounded"
+                className="flex flex-row w-full gap-5 mb-4 p-4 border border-blue-500 rounded"
               >
-                <div className="relative col-span-1">
+                <div className="relative w-full">
                   <div className="relative w-full">
                     <button
                       type="button"
@@ -426,7 +441,9 @@ function NewProduct() {
                       className="px-5 py-2.5 rounded text-black w-full text-start flex justify-between align-middle m-auto items-center text-sm font-medium outline-none bg-white border-[1px] border-solid border-blue-500 "
                       onClick={() => toggleRoleDropdown(chartIndex, roleIndex)}
                     >
-                      {selectedRoleOption[chartIndex]?.[roleIndex] || "Role"}
+                      {selectedRoleOption[chartIndex]?.[roleIndex] ||
+                        rolePrice.role ||
+                        "Role"}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-3 fill-blue-500 inline ml-3"
@@ -466,56 +483,43 @@ function NewProduct() {
                   </div>
                 </div>
                 <input
-                  placeholder="List Price"
-                  value={rolePrice.listPrice}
+                  placeholder="GST %"
+                  value={rolePrice.gst}
                   onChange={(e) =>
                     handleRolePriceChange(
                       chartIndex,
                       roleIndex,
-                      "listPrice",
+                      "gst",
                       e.target.value
                     )
                   }
-                  className="p-2 border border-blue-500 rounded col-span-1"
+                  className="p-2 w-full border border-blue-500 rounded col-span-1"
                 />
                 <input
-                  placeholder="Dealer Price"
-                  value={rolePrice.dealerPrice}
+                  placeholder="Price with GST"
+                  value={rolePrice.priceWithGst}
                   onChange={(e) =>
                     handleRolePriceChange(
                       chartIndex,
                       roleIndex,
-                      "dealerPrice",
+                      "priceWithGst",
                       e.target.value
                     )
                   }
-                  className="p-2 border border-blue-500 rounded col-span-1"
+                  className="p-2 border w-full border-blue-500 rounded col-span-1"
                 />
                 <input
-                  placeholder="Discount"
-                  value={rolePrice.discount}
+                  placeholder="Minimum Order Quantity"
+                  value={rolePrice.MinimumOrderQuantity}
                   onChange={(e) =>
                     handleRolePriceChange(
                       chartIndex,
                       roleIndex,
-                      "discount",
+                      "MinimumOrderQuantity",
                       e.target.value
                     )
                   }
-                  className="p-2 border border-blue-500 rounded col-span-1"
-                />
-                <input
-                  placeholder="Discount Dealer Price"
-                  value={rolePrice.discountDealerPrice}
-                  onChange={(e) =>
-                    handleRolePriceChange(
-                      chartIndex,
-                      roleIndex,
-                      "discountDealerPrice",
-                      e.target.value
-                    )
-                  }
-                  className="p-2 border border-blue-500 rounded col-span-1"
+                  className="p-2 border w-full border-blue-500 rounded col-span-1"
                 />
               </div>
             ))}
@@ -536,6 +540,14 @@ function NewProduct() {
           </div>
         ))}
       </div>
+      <button
+        className="bg-blue-500 w-full rounded py-2 px-4 text-white"
+        onClick={() => {
+          handlesubmit();
+        }}
+      >
+        Add Product
+      </button>
     </div>
   );
 }

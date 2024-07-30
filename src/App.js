@@ -7,6 +7,7 @@ import Products from "./Screens/Products";
 import Lottie from "lottie-react";
 import animationData from "./Static/Images/Animation.json";
 import Addproduct from "./Screens/Addproduct";
+import Customers from "./Screens/Customers";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -41,6 +42,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/add-product" element={<Addproduct />} />
+              <Route path="/customers" element={<Customers />} />
             </Routes>
           </div>
         </>
